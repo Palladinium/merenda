@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arboard = "3.2.1"
+arboard = { version = "3.2.1", default-features = false }
 argh = "0.1.12"
 strum = { version = "0.25.0", features = ["derive"] }
 thiserror = "1.0.49"
