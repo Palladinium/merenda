@@ -102,6 +102,8 @@ fn run_server(address: SocketAddr) -> Result<(), ServerError> {
     let listener =
         TcpListener::bind(address).unwrap_or_else(|e| panic!("Error binding to address: {e}"));
 
+    eprintln!("Server listening on {address}");
+
     loop {
         let (stream, addr) = listener
             .accept()
