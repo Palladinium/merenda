@@ -1,0 +1,11 @@
+[Unit]
+Description=Merenda - Byte-sized snacks over SSH
+StartLimitIntervalSec=5
+StartLimitBurst=10
+
+[Service]
+ExecStart="%h/.cargo/bin/merenda" server
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
