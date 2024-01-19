@@ -46,9 +46,9 @@ struct ServerCommand {}
 /// read stdin and set it to the clipboard
 #[argh(name = "set")]
 struct SetCommand {
-    /// which clipboard to set. One of: clipboard, primary, secondary
-    #[argh(positional, default = "ClipboardType::default()")]
-    clipboard_type: ClipboardType,
+    /// which clipboard to set. One of: clipboard, primary, secondary, all. By default, set all.
+    #[argh(positional, default = "SetClipboardType::default()")]
+    clipboard_type: SetClipboardType,
 }
 
 #[derive(Debug, FromArgs)]
@@ -56,27 +56,53 @@ struct SetCommand {
 /// send the contents of the clipboard to stdout
 #[argh(name = "get")]
 struct GetCommand {
-    /// which clipboard to get. One of: clipboard, primary, secondary
-    #[argh(positional, default = "ClipboardType::default()")]
-    clipboard_type: ClipboardType,
+    /// which clipboard to get. One of: clipboard, primary, secondary. By default, get clipboard
+    #[argh(positional, default = "GetClipboardType::default()")]
+    clipboard_type: GetClipboardType,
 }
 
 #[derive(Debug, Default, FromRepr, EnumString, strum::Display)]
 #[strum(serialize_all = "snake_case")]
 #[repr(u8)]
-enum ClipboardType {
-    Primary = 0,
+enum GetClipboardType {
+    Primary = 1,
     #[default]
-    Clipboard = 1,
-    Secondary = 2,
+    Clipboard = 2,
+    Secondary = 3,
 }
 
-impl From<ClipboardType> for arboard::LinuxClipboardKind {
-    fn from(value: ClipboardType) -> Self {
-        match value {
-            ClipboardType::Primary => arboard::LinuxClipboardKind::Primary,
-            ClipboardType::Clipboard => arboard::LinuxClipboardKind::Clipboard,
-            ClipboardType::Secondary => arboard::LinuxClipboardKind::Secondary,
+impl GetClipboardType {
+    fn to_arboard(self) -> arboard::LinuxClipboardKind {
+        match self {
+            Self::Primary => arboard::LinuxClipboardKind::Primary,
+            Self::Clipboard => arboard::LinuxClipboardKind::Clipboard,
+            Self::Secondary => arboard::LinuxClipboardKind::Secondary,
+        }
+    }
+}
+
+#[derive(Debug, Default, FromRepr, EnumString, strum::Display)]
+#[strum(serialize_all = "snake_case")]
+#[repr(u8)]
+enum SetClipboardType {
+    #[default]
+    All = 0,
+    Primary = 1,
+    Clipboard = 2,
+    Secondary = 3,
+}
+
+impl SetClipboardType {
+    fn to_arboard(self) -> &'static [arboard::LinuxClipboardKind] {
+        match self {
+            Self::All => &[
+                arboard::LinuxClipboardKind::Primary,
+                arboard::LinuxClipboardKind::Clipboard,
+                arboard::LinuxClipboardKind::Secondary,
+            ],
+            Self::Primary => &[arboard::LinuxClipboardKind::Primary],
+            Self::Clipboard => &[arboard::LinuxClipboardKind::Clipboard],
+            Self::Secondary => &[arboard::LinuxClipboardKind::Secondary],
         }
     }
 }
@@ -137,25 +163,35 @@ fn handle_request(clipboard: &mut Clipboard, mut stream: TcpStream) -> Result<()
     let request_type = RequestType::from_repr(request_type_byte)
         .ok_or(RequestError::InvalidRequestType(request_type_byte))?;
 
-    let clipboard_type = ClipboardType::from_repr(clipboard_type_byte)
-        .ok_or(RequestError::InvalidClipboardType(clipboard_type_byte))?;
-
-    eprintln!("{request_type:?} {clipboard_type:?}");
-
     match request_type {
         RequestType::Get => {
-            let contents = clipboard.get().clipboard(clipboard_type.into()).text()?;
+            let clipboard_type = GetClipboardType::from_repr(clipboard_type_byte)
+                .ok_or(RequestError::InvalidClipboardType(clipboard_type_byte))?;
+
+            eprintln!("{request_type:?} {clipboard_type:?}");
+
+            let contents = clipboard
+                .get()
+                .clipboard(clipboard_type.to_arboard())
+                .text()?;
             stream.write_all(contents.as_bytes())?;
             stream.flush()?;
         }
 
         RequestType::Set => {
+            let clipboard_type = SetClipboardType::from_repr(clipboard_type_byte)
+                .ok_or(RequestError::InvalidClipboardType(clipboard_type_byte))?;
+
+            eprintln!("{request_type:?} {clipboard_type:?}");
+
             let new_contents = str::from_utf8(&buf[2..])?;
 
-            clipboard
-                .set()
-                .clipboard(clipboard_type.into())
-                .text(new_contents)?;
+            for clipboard_type in clipboard_type.to_arboard() {
+                clipboard
+                    .set()
+                    .clipboard(*clipboard_type)
+                    .text(new_contents)?;
+            }
         }
     }
 
@@ -185,7 +221,7 @@ enum RequestType {
     Set = 1,
 }
 
-fn send_set(address: SocketAddr, clipboard_type: ClipboardType) -> io::Result<()> {
+fn send_set(address: SocketAddr, clipboard_type: SetClipboardType) -> io::Result<()> {
     let mut stream = TcpStream::connect(address)?;
 
     stream.write_all(&[RequestType::Set as u8, clipboard_type as u8])?;
@@ -196,7 +232,7 @@ fn send_set(address: SocketAddr, clipboard_type: ClipboardType) -> io::Result<()
     Ok(())
 }
 
-fn send_get(address: SocketAddr, clipboard_type: ClipboardType) -> io::Result<()> {
+fn send_get(address: SocketAddr, clipboard_type: GetClipboardType) -> io::Result<()> {
     let mut stream = TcpStream::connect(address)?;
 
     stream.write_all(&[RequestType::Get as u8, clipboard_type as u8])?;
