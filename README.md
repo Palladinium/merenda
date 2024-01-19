@@ -12,7 +12,7 @@ cargo install merenda
 
 ## 1. Local machine
 
-After installation, run `merenda server` on your main machine (the one you'll use to SSH into other systems). It will listen for connections requesting to read/write your clipboard, and you'll generally want to have it running in the background. On its own, it also works as a roundabout way to read/write your clipboard, by using `merenda get` and `merenda set` on your local machine to connect to the server.
+Run `merenda server`. It will listen for connections requesting to read/write your clipboard, and you'll generally want to have it running in the background. On its own, it also works as a roundabout way to read/write your clipboard, by using `merenda get` and `merenda set` on your local machine to connect to the server.
 
 If you're using systemd, you can copy the [provided user service](examples/merenda.service) to `~/.config/systemd/user`, which you can activate with `systemctl --user start merenda.service` and enable at boot with `systemctl --user enable merenda.service`.
 
@@ -55,7 +55,7 @@ Host myothercomputer
     Hostname 10.1.1.251
 ```
 
-Now you can use `merenda set` and `merenda get` to read/write the clipboard from the remote host!
+Now you can use `merenda set` and `merenda get` to read/write the clipboard on the remote host!
 
 # License
 
