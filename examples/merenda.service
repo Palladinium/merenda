@@ -1,5 +1,5 @@
 [Unit]
-Description=Merenda - Byte-sized snacks over SSH
+Description=Merenda - Snack-sized clipboard syncronization over SSH
 StartLimitIntervalSec=5
 StartLimitBurst=10
 

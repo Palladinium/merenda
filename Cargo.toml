@@ -2,6 +2,9 @@
 name = "merenda"
 version = "0.1.0"
 edition = "2021"
+description = "Snack-sized clipboard syncronization over SSH"
+license = "GPL-3.0"
+license-file = "COPYING"
 
 [dependencies]
 arboard = { version = "3.2.1", default-features = false, features = ["wayland-data-control"] }

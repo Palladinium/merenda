@@ -1,4 +1,4 @@
-# Merenda - Byte-sized snacks over SSH
+# Merenda - Snack-sized clipboard syncronization over SSH
 
 A tiny server/client application to synchronize clipboards over SSH in Rust, inspired by similar tools like [Lemonade](https://github.com/pocke/lemonade).
 
