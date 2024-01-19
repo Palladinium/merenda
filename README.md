@@ -1,5 +1,10 @@
 # Merenda - Snack-sized clipboard syncronization over SSH
 
+[![Crates.io][crates-badge]][crates-url]
+
+[crates-badge]: https://img.shields.io/crates/v/merenda.svg
+[crates-url]: https://crates.io/crates/merenda
+
 A tiny server/client application to synchronize clipboards over SSH written in Rust, inspired by similar tools like [Lemonade](https://github.com/pocke/lemonade).
 
 # Installation
