@@ -5,6 +5,9 @@ edition = "2021"
 description = "Snack-sized clipboard syncronization over SSH"
 license = "GPL-3.0"
 license-file = "COPYING"
+repository = "https://github.com/Palladinium/merenda"
+categories = ["command-line-utilities"]
+keywords = ["clipboard"]
 
 [dependencies]
 arboard = { version = "3.2.1", default-features = false, features = ["wayland-data-control"] }
