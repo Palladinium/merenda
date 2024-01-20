@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 description = "Snack-sized clipboard syncronization over SSH"
 license = "GPL-3.0"
-license-file = "COPYING"
 repository = "https://github.com/Palladinium/merenda"
 categories = ["command-line-utilities"]
 keywords = ["clipboard"]
