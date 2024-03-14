@@ -11,5 +11,5 @@ keywords = ["clipboard"]
 [dependencies]
 arboard = { version = "3.2.1", default-features = false, features = ["wayland-data-control"] }
 argh = "0.1.12"
-strum = { version = "0.25.0", features = ["derive"] }
+strum = { version = "0.26.2", features = ["derive"] }
 thiserror = "1.0.49"
