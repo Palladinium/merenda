@@ -61,7 +61,7 @@ struct GetCommand {
     clipboard_type: GetClipboardType,
 }
 
-#[derive(Debug, Default, FromRepr, EnumString, strum::Display)]
+#[derive(Clone, Copy, Debug, Default, FromRepr, EnumString, strum::Display)]
 #[strum(serialize_all = "snake_case")]
 #[repr(u8)]
 enum GetClipboardType {
@@ -81,7 +81,7 @@ impl GetClipboardType {
     }
 }
 
-#[derive(Debug, Default, FromRepr, EnumString, strum::Display)]
+#[derive(Clone, Copy, Debug, Default, FromRepr, EnumString, strum::Display)]
 #[strum(serialize_all = "snake_case")]
 #[repr(u8)]
 enum SetClipboardType {
@@ -106,10 +106,6 @@ impl SetClipboardType {
         }
     }
 }
-
-#[derive(Debug, thiserror::Error)]
-#[error("Invalid clipboard target")]
-struct InvalidClipboardTarget;
 
 fn main() {
     let args: Args = argh::from_env();
